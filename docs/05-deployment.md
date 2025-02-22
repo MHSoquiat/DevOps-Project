@@ -119,7 +119,7 @@ Visit http://localhost:3000 (React dev server)
 kubectl port-forward svc/backend -n task-app 3001:3000
 
 # Test API
-curl http://localhost:3001/api/health
+curl http://localhost:3001/health
 ```
 
 Note: We're using the sample task management application from the `/app` directory with:
