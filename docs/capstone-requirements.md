@@ -50,9 +50,9 @@ By completing this project, you will:
 ## Getting Started
 
 1. Clone the provided application repository
-2. Test the application locally using docker-compose:
+2. Test the application locally using docker compose:
 ```bash
-docker-compose up
+docker compose up
 ```
 3. Review the application architecture and components
 4. Begin implementing the DevOps requirements

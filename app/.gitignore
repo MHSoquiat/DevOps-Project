@@ -30,7 +30,7 @@ pids/
 
 # Docker
 .docker/
-docker-compose.override.yml
+docker compose.override.yml
 
 # Database
 postgres-data/
@@ -65,4 +65,4 @@ coverage/
 
 # Keep these files
 !.env.example
-!docker-compose.yml
+!docker compose.yml

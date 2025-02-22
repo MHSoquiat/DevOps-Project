@@ -20,7 +20,7 @@ This repository contains a task management application and its complete DevOps i
 1. **Local Development**
 ```bash
 cd app
-docker-compose up
+docker compose up
 ```
 Access the application at http://localhost:80
 

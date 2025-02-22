@@ -1,16 +1,14 @@
-version: '3.8'
-
 services:
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - backend
     environment:
-      - REACT_APP_API_URL=http://localhost:3000/api
+      - REACT_APP_API_URL=http://localhost:3001/api
     networks:
       - app-network
 
@@ -19,7 +17,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - postgres
     environment:
@@ -59,6 +57,6 @@ networks:
 volumes:
   postgres-data:
 
-# Note: This docker-compose file sets up all three tiers of the application
+# Note: This docker compose file sets up all three tiers of the application
 # for local development. You'll be creating Kubernetes manifests to deploy
 # these services in your cluster.

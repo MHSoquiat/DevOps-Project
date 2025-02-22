@@ -13,7 +13,7 @@ You'll be working with a simple task management application:
 
 1. Start everything:
 ```bash
-docker-compose up
+docker compose up
 ```
 
 2. Open in your browser:
@@ -42,7 +42,7 @@ app/
 ## Development
 
 ### Prerequisites
-- Docker and docker-compose
+- Docker and docker compose
 - Node.js 16+ (optional, for local development)
 - PostgreSQL 13+ (optional, for local development)
 

@@ -1,5 +1,5 @@
 # Use Node.js base image
-FROM node:16-alpine
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .

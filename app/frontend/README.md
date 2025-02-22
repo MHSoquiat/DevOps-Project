@@ -5,8 +5,8 @@ This is the React frontend for the task management application.
 ## Quick Start
 
 ```bash
-# Using docker-compose (recommended)
-docker-compose up
+# Using docker compose (recommended)
+docker compose up
 
 # Manual development
 npm install

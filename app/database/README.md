@@ -29,7 +29,7 @@ CREATE TABLE tasks (
 
 The database is automatically initialized when you run:
 ```bash
-docker-compose up
+docker compose up
 ```
 
 This will:
@@ -76,4 +76,4 @@ psql -h localhost -U postgres -d taskdb
 taskdb=# SELECT * FROM tasks;
 ```
 
-Remember: The database setup is handled automatically by docker-compose. You only need these details if you're running PostgreSQL locally.
+Remember: The database setup is handled automatically by docker compose. You only need these details if you're running PostgreSQL locally.

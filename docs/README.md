@@ -7,7 +7,7 @@ Welcome! This guide will help you deploy the task management application using D
 1. Make sure you can run the application locally:
    ```bash
    cd app
-   docker-compose up
+   docker compose up
    ```
 
 2. Test that it works:

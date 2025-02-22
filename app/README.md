@@ -29,7 +29,7 @@ New to this project? Check out our [Quick Start Guide](./QUICKSTART.md)!
 
 1. Start all services:
 ```bash
-docker-compose up
+docker compose up
 ```
 
 2. Access the application:
@@ -74,10 +74,10 @@ DB_PASSWORD=postgres
 ### Start Application
 ```bash
 # Start all services
-docker-compose up
+docker compose up
 
 # Start in background
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Development
