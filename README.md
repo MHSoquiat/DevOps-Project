@@ -22,7 +22,9 @@ This repository contains a task management application and its complete DevOps i
 cd app
 docker compose up
 ```
-Access the application at http://localhost:80
+Access the application at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
 
 2. **Kubernetes Deployment**
 - Follow the guides in the [docs](./docs) directory for:

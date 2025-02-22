@@ -17,8 +17,8 @@ docker compose up
 ```
 
 2. Open in your browser:
-   - Web App: http://localhost:80
-   - API: http://localhost:3000
+   - Web App: http://localhost:3000 (React dev server)
+   - API: http://localhost:3001
 
 3. Test basic features:
    - Create a task
@@ -49,7 +49,7 @@ app/
 ### Environment Setup
 1. Frontend (.env):
 ```
-REACT_APP_API_URL=http://localhost:3000/api
+REACT_APP_API_URL=http://localhost:3001/api
 ```
 
 2. Backend (.env):
