@@ -1,18 +1,48 @@
 # Putting It All Together
 
-This guide will help you deploy the complete task management application using everything we've learned.
+This guide will help you deploy the complete task management application. We'll combine everything we've learned into a working system!
 
-## Overview
+## The Complete Picture
 
-We'll combine all the pieces:
-1. Kubernetes cluster running
-2. Helm charts ready
-3. GitLab CI pipeline set up
-4. ArgoCD watching our repo
+Here's how all the pieces work together:
+
+```mermaid
+graph TD
+    A[Your Code] --> B[GitLab]
+    B --> C[Container Registry]
+    B --> D[ArgoCD]
+    C --> E[Kubernetes]
+    D --> E
+    E --> F[Running Application]
+
+    style A fill:#ccffcc
+    style F fill:#ccffcc
+```
+
+Let's check each part:
+1. Your code is in GitLab
+2. GitLab CI builds containers
+3. ArgoCD watches for changes
+4. Kubernetes runs everything
+
+## Success Checklist
+
+```mermaid
+graph LR
+    A[Ready to Deploy?] --> B[Kubernetes Running]
+    A --> C[Helm Charts Ready]
+    A --> D[GitLab CI Working]
+    A --> E[ArgoCD Connected]
+
+    B --> F[Let's Go!]
+    C --> F
+    D --> F
+    E --> F
+```
 
 ## Step-by-Step Deployment
 
-### 1. Verify Prerequisites
+### 1. Final Check
 
 ```bash
 # Check cluster
@@ -25,17 +55,31 @@ helm list
 argocd app list
 ```
 
-### 2. Prepare Repository
+### 2. Repository Structure
 
-Your repo should look like:
+Your repository should be organized like this:
+
+```mermaid
+graph TD
+    A[Repository Root] --> B[.gitlab-ci.yml]
+    A --> C[helm/]
+    A --> D[kubernetes/]
+    A --> E[argocd/]
+
+    C --> F[task-app/]
+
+    style A fill:#f9f,stroke:#333
+    style B fill:#bbf
+    style C fill:#bbf
+    style D fill:#bbf
+    style E fill:#bbf
 ```
-.
-├── .gitlab-ci.yml          # CI/CD pipeline
-├── helm/                   # Helm charts
-│   └── task-app/
-├── kubernetes/            # Raw K8s manifests
-└── argocd/               # ArgoCD config
-```
+
+Each part has a purpose:
+- `.gitlab-ci.yml`: Pipeline configuration
+- `helm/`: Application packaging
+- `kubernetes/`: Raw manifests
+- `argocd/`: GitOps configuration
 
 ### 3. Deploy Application
 
@@ -65,18 +109,22 @@ kubectl get ingress -n task-app
 ### 2. Test Frontend
 ```bash
 # Port forward frontend service
-kubectl port-forward svc/frontend -n task-app 8080:80
+kubectl port-forward svc/frontend -n task-app 3000:3000
 ```
-Visit http://localhost:8080
+Visit http://localhost:3000 (React dev server)
 
 ### 3. Test Backend
 ```bash
 # Port forward backend service
-kubectl port-forward svc/backend -n task-app 3000:3000
+kubectl port-forward svc/backend -n task-app 3001:3000
 
 # Test API
-curl http://localhost:3000/health
+curl http://localhost:3001/api/health
 ```
+
+Note: We're using the sample task management application from the `/app` directory with:
+- Frontend running on port 3000 (React dev server)
+- Backend API running on port 3001
 
 ## Making Changes
 
@@ -108,9 +156,10 @@ curl http://localhost:3000/health
 - [ ] Persistent volumes available
 
 ### 2. Applications
-- [ ] Frontend pods running
-- [ ] Backend pods running
-- [ ] Database running
+- [ ] Frontend pods running (React dev server on port 3000)
+- [ ] Backend pods running (API on port 3001)
+- [ ] Database running (PostgreSQL)
+- [ ] Sample app from `/app` directory deployed successfully
 
 ### 3. Networking
 - [ ] Services created

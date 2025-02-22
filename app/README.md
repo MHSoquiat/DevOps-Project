@@ -97,17 +97,6 @@ npm install
 npm run dev  # Runs on http://localhost:3001
 ```
 
-### Testing
-```bash
-# Frontend tests
-cd frontend
-npm test
-
-# Backend tests
-cd backend
-npm test
-```
-
 ## Support
 
 Need help?

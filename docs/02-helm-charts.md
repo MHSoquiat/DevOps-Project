@@ -1,18 +1,44 @@
 # Creating Your First Helm Chart
 
-This guide will help you create a Helm chart for the task management application.
+This guide will help you create a Helm chart for the task management application. We'll break it down into simple steps.
 
-## What is Helm?
+## What is Helm and Why Do We Need It?
 
-Think of Helm as a package manager for Kubernetes:
-- Like npm for Node.js
-- Or pip for Python
-- But for Kubernetes applications
+```mermaid
+graph TD
+    A[Problem: Many YAML Files] --> B[Solution: Helm]
+    B --> C[Template Everything]
+    B --> D[Package it Up]
+    B --> E[Easy to Update]
 
-## Prerequisites
+    style A fill:#ffcccc
+    style B fill:#ccffcc
+```
+
+Helm helps us manage Kubernetes applications by:
+1. Templating repetitive YAML files
+2. Packaging everything together
+3. Making updates easier
+4. Managing different environments
+
+Think of it like:
+- npm for Node.js (package.json)
+- pip for Python (requirements.txt)
+- But for Kubernetes applications!
+
+## Before We Start
+
+You'll need:
+```mermaid
+graph LR
+    A[Prerequisites] --> B[Kubernetes Cluster]
+    A --> C[Helm CLI]
+    B --> D[Ready to Start]
+    C --> D
+```
 
 1. Working Kubernetes cluster (from previous guide)
-2. Helm installed:
+2. Helm installed on your computer:
 ```bash
 # macOS
 brew install helm
@@ -21,7 +47,27 @@ brew install helm
 choco install kubernetes-helm
 ```
 
-## Your First Chart
+## What We'll Build
+
+Here's what we're creating:
+
+```mermaid
+graph TD
+    A[Helm Chart] --> B[Frontend Config]
+    A --> C[Backend Config]
+    A --> D[Database Config]
+
+    B --> E[Kubernetes Resources]
+    C --> E
+    D --> E
+
+    E --> F[Running App]
+```
+
+We'll convert our sample app from the `/app` directory into a Helm chart that can:
+- Deploy all components
+- Configure everything
+- Make updates easy
 
 ### 1. Create Chart Structure
 ```bash
@@ -32,6 +78,8 @@ helm create task-app
 cd task-app
 rm -rf templates/*
 ```
+
+Note: We'll be converting the Docker Compose setup from the sample app into Kubernetes manifests managed by Helm.
 
 ### 2. Update Chart.yaml
 ```yaml
@@ -55,7 +103,7 @@ frontend:
     tag: latest
   service:
     type: ClusterIP
-    port: 80
+    port: 3000  # Using React's dev server port
 
 # Backend configuration
 backend:
@@ -108,7 +156,7 @@ spec:
   type: {{ .Values.frontend.service.type }}
   ports:
   - port: {{ .Values.frontend.service.port }}
-    targetPort: 80
+    targetPort: 3000  # React dev server port
   selector:
     app: frontend
 ```
@@ -143,6 +191,14 @@ kubectl get pods -n task-app
 
 # Check services
 kubectl get svc -n task-app
+
+# Access the application
+kubectl port-forward svc/frontend 3000:3000 -n task-app  # Frontend
+kubectl port-forward svc/backend 3001:3000 -n task-app   # Backend
+
+# Visit in your browser:
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:3001
 ```
 
 ## Making Changes

@@ -1,20 +1,75 @@
 # Setting Up ArgoCD
 
-This guide will help you implement GitOps using ArgoCD for the task management application.
+This guide will help you implement GitOps using ArgoCD. We'll explain what GitOps is and why it's useful!
 
-## What is GitOps?
+## Understanding GitOps
 
-GitOps uses Git as the source of truth:
-- Your desired state is in Git
-- ArgoCD watches your Git repo
-- Automatically syncs changes to cluster
-- Like "continuous deployment for Kubernetes"
+GitOps is a way to automatically update your application:
 
-## Prerequisites
+```mermaid
+sequenceDiagram
+    participant D as Developer
+    participant G as Git Repo
+    participant A as ArgoCD
+    participant K as Kubernetes
 
-1. Working Kubernetes cluster
-2. kubectl configured
-3. Git repository with your Helm charts
+    D->>G: Push Changes
+    A->>G: Watch for Changes
+    A->>A: Compare with Cluster
+    A->>K: Apply Updates
+
+    Note over A,K: Automatic Sync!
+```
+
+Think of it like this:
+1. You update code in Git
+2. ArgoCD notices the change
+3. ArgoCD updates Kubernetes
+4. Everything stays in sync!
+
+## Why Use GitOps?
+
+```mermaid
+graph TD
+    A[Benefits of GitOps] --> B[Git is Source of Truth]
+    A --> C[Automatic Updates]
+    A --> D[Easy Rollbacks]
+    A --> E[Better Security]
+
+    B --> F[Everything in Code]
+    C --> F
+    D --> F
+    E --> F
+
+    style A fill:#ccffcc
+```
+
+## Before We Start
+
+Let's check what we need:
+
+```mermaid
+graph LR
+    A[Prerequisites] --> B[Kubernetes Ready]
+    A --> C[kubectl Working]
+    A --> D[Git Repository]
+
+    B --> E[Ready to Start]
+    C --> E
+    D --> E
+```
+
+1. Working Kubernetes Cluster
+   - From previous guides
+   - Check with: `kubectl cluster-info`
+
+2. kubectl Configured
+   - Should be pointing to your cluster
+   - Check with: `kubectl get nodes`
+
+3. Git Repository
+   - With your Helm charts
+   - From GitLab CI guide
 
 ## Installing ArgoCD
 
@@ -50,7 +105,9 @@ Visit: http://localhost:8080
 - Username: admin
 - Password: (from above command)
 
-## Creating Your First Application
+## Setting Up the Sample Application
+
+We'll configure ArgoCD to manage the task management application from the `/app` directory.
 
 ### 1. Create Application YAML
 ```yaml
@@ -62,9 +119,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://gitlab.com/your-username/task-app.git
+    repoURL: https://gitlab.com/your-username/task-app.git  # Your GitLab repository
     targetRevision: HEAD
-    path: helm/task-app
+    path: helm/task-app  # Path to your Helm chart
   destination:
     server: https://kubernetes.default.svc
     namespace: task-app-dev
@@ -72,7 +129,21 @@ spec:
     automated:
       prune: true
       selfHeal: true
+
+---
+# ConfigMap for frontend configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: task-app-dev
+data:
+  REACT_APP_API_URL: "http://localhost:3001/api"  # Backend API URL
 ```
+
+Note: Make sure to:
+1. Replace the repoURL with your GitLab repository URL
+2. Update the frontend configuration to match the ports we're using (frontend: 3000, backend: 3001)
 
 ### 2. Apply Configuration
 ```bash

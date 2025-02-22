@@ -1,24 +1,78 @@
 # DevOps Implementation Guide
 
-Welcome! This guide will help you deploy the task management application using DevOps practices.
+Welcome! This guide will walk you through implementing DevOps practices for a simple task management application. Don't worry if some concepts are new - we'll explain everything step by step.
 
-## Before You Start
+## The Big Picture
 
-1. Make sure you can run the application locally:
+Before diving into the technical details, let's understand what we're building:
+
+```mermaid
+graph LR
+    A[Your Code] --> B[GitLab CI]
+    B --> C[Container Registry]
+    C --> D[ArgoCD]
+    D --> E[Kubernetes]
+    E --> F[Running App]
+```
+
+1. You'll write code and push to GitLab
+2. GitLab CI automatically builds container images
+3. ArgoCD watches for changes and updates Kubernetes
+4. Your app runs in Kubernetes
+
+This is called a "GitOps" workflow - everything starts with a git push!
+
+## Starting Point: The Sample App
+
+We'll use a simple task management application (provided in the `/app` directory) to learn DevOps practices. It has three parts:
+
+```mermaid
+graph TD
+    A[Frontend: React] --> B[Backend: Node.js]
+    B --> C[Database: PostgreSQL]
+```
+
+First, let's make sure you can run it locally:
    ```bash
    cd app
    docker compose up
    ```
 
 2. Test that it works:
-   - Open http://localhost:80
-   - Create a task
-   - Update its status
-   - Delete the task
+   - Frontend: http://localhost:3000 (React dev server)
+   - Backend API: http://localhost:3001
+   - Try the features:
+     * Create a task
+     * Update its status
+     * Delete the task
 
-## What You'll Be Doing
+## Your Learning Journey
 
-You'll implement DevOps practices for the application:
+We'll implement DevOps practices in small, manageable steps:
+
+### Week 1: Building the Foundation
+```mermaid
+timeline
+    Local Setup : Run app locally
+                : Set up Kubernetes
+                : Learn basic commands
+    Helm : Package app
+         : Configure deployment
+         : Test locally
+```
+
+### Week 2: Automation & GitOps
+```mermaid
+timeline
+    GitLab CI : Set up repository
+              : Create pipeline
+              : Build containers
+    ArgoCD : Install ArgoCD
+           : Configure sync
+           : Deploy app
+```
+
+You'll learn to:
 
 1. **Local Kubernetes Setup**
    - Choose a local Kubernetes solution

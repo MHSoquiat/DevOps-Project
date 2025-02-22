@@ -1,17 +1,66 @@
 # Local Kubernetes Setup
 
-This guide will help you set up a local Kubernetes cluster for development.
+This guide will help you set up a local Kubernetes cluster for development. We'll start small and build up step by step.
+
+## What We're Building
+
+Here's what we'll set up:
+
+```mermaid
+graph TD
+    A[Your Laptop] --> B[Local Kubernetes Cluster]
+    B --> C[Sample App Running]
+
+    subgraph "Your Development Environment"
+    A
+    end
+
+    subgraph "Local Cluster"
+    B
+    C
+    end
+```
 
 ## Prerequisites
 
-Make sure you have:
-- Docker Desktop installed and running
-- 8GB RAM minimum (16GB recommended)
-- Terminal/Command Prompt access
+Before we start, you'll need:
+```mermaid
+graph LR
+    A[Docker Desktop] --> D[We'll use this]
+    B[8GB RAM] --> D
+    C[Terminal Access] --> D
+    D[Ready to Start]
+```
 
-## Choose Your Kubernetes
+1. Docker Desktop
+   - Install from [docker.com](https://www.docker.com/products/docker-desktop)
+   - Make sure it's running
+   - Check with: `docker --version`
 
-You can use any of these options:
+2. System Resources
+   - 8GB RAM minimum (16GB recommended)
+   - Check Activity Monitor (Mac) or Task Manager (Windows)
+
+3. Terminal/Command Prompt
+   - Mac: Terminal.app or iTerm
+   - Windows: PowerShell or Command Prompt
+
+## Choose Your Kubernetes Tool
+
+You have three options for running Kubernetes locally. Let's compare them:
+
+```mermaid
+graph TD
+    A[Local Kubernetes Options] --> B[Minikube]
+    A --> C[kind]
+    A --> D[k3d]
+
+    B --> E[Best for Beginners]
+    C --> F[Good for Testing]
+    D --> G[Very Lightweight]
+```
+
+Pick one option - we recommend Minikube for beginners:
 
 ### 1. Minikube (Recommended for Beginners)
 - Easiest to set up
@@ -116,7 +165,7 @@ kubectl scale deployment/<name> --replicas=3
 
 ## Test Your Setup
 
-Let's deploy a test application:
+First, let's verify your cluster with a simple test:
 
 ```bash
 # Create a namespace
@@ -132,7 +181,28 @@ kubectl expose pod nginx --port=80 -n test
 kubectl port-forward pod/nginx 8080:80 -n test
 ```
 
-Now visit http://localhost:8080 in your browser.
+Visit http://localhost:8080 in your browser to verify nginx is working.
+
+## Deploy the Sample Application
+
+Now let's try deploying our sample task management application from the `/app` directory:
+
+1. Create a namespace for our app:
+```bash
+kubectl create namespace task-manager
+```
+
+2. Deploy the application components:
+```bash
+# From the root directory of this project
+kubectl apply -f app/kubernetes/ -n task-manager
+```
+
+3. Once deployed, you should be able to access:
+- Frontend: http://localhost:3000 (React dev server)
+- Backend API: http://localhost:3001
+
+Note: The actual deployment configuration will be covered in detail in the Helm charts section.
 
 ## Common Issues
 

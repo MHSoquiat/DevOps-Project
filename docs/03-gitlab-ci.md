@@ -1,19 +1,73 @@
 # Setting Up GitLab CI/CD
 
-This guide will help you create a CI/CD pipeline for the task management application.
+This guide will help you create an automated pipeline that builds and deploys your application. Don't worry if you're new to CI/CD - we'll explain everything!
 
-## What is CI/CD?
+## Understanding CI/CD
 
-CI/CD helps automate your development workflow:
-- CI (Continuous Integration): Build and test code automatically
-- CD (Continuous Delivery): Deploy code automatically
-- Triggered by git pushes
+Let's break down what happens when you push code:
 
-## Prerequisites
+```mermaid
+sequenceDiagram
+    participant D as Developer
+    participant G as GitLab
+    participant S as Shared Runner
+    participant R as Registry
+    participant K as Kubernetes
 
-1. GitLab account (free tier is fine)
-2. Git installed locally
-3. Docker registry access (GitLab provides one)
+    D->>G: Push Code
+    G->>S: Trigger Pipeline
+    S->>S: Build Container
+    S->>R: Push Image
+    S->>K: Deploy App
+
+    Note over S: GitLab.com provides<br/>shared runners for free!
+```
+
+CI/CD automates this whole process:
+- CI (Continuous Integration): Automatically builds your code into containers
+- CD (Continuous Delivery): Automatically deploys these containers
+- Everything starts with a git push!
+
+## What You'll Need
+
+```mermaid
+graph TD
+    A[Prerequisites] --> B[GitLab.com Account]
+    A --> C[Git on Your Computer]
+    A --> D[Docker Registry]
+
+    B --> E[Free Tier is Perfect!]
+    C --> F[For Code Pushes]
+    D --> G[GitLab Provides This]
+```
+
+1. GitLab.com Account
+   - Sign up at https://gitlab.com
+   - Free tier has everything we need
+   - No credit card required
+
+2. Git on Your Computer
+   - Check with: `git --version`
+   - Install from: git-scm.com
+
+3. Docker Registry Access
+   - GitLab.com provides this free
+   - We'll use it to store our containers
+
+## GitLab.com Free Features
+
+Everything you need is included:
+```mermaid
+graph LR
+    A[GitLab Free Tier] --> B[Unlimited Repos]
+    A --> C[400 CI/CD Minutes]
+    A --> D[Container Registry]
+    A --> E[Pipeline Tools]
+
+    style A fill:#ccffcc
+```
+
+No need to set up your own GitLab server!
 
 ## Basic Pipeline
 
@@ -21,7 +75,6 @@ CI/CD helps automate your development workflow:
 ```yaml
 # Basic pipeline structure
 stages:
-  - test
   - build
   - deploy
 
@@ -29,32 +82,7 @@ variables:
   DOCKER_REGISTRY: ${CI_REGISTRY}
 ```
 
-### 2. Add Test Stage
-```yaml
-frontend-test:
-  stage: test
-  image: node:16-alpine
-  script:
-    - cd frontend
-    - npm install
-    - npm test
-  only:
-    changes:
-      - frontend/**/*
-
-backend-test:
-  stage: test
-  image: node:16-alpine
-  script:
-    - cd backend
-    - npm install
-    - npm test
-  only:
-    changes:
-      - backend/**/*
-```
-
-### 3. Add Build Stage
+### 2. Add Build Stage
 ```yaml
 build-frontend:
   stage: build
@@ -85,9 +113,13 @@ deploy-dev:
 ## Setting Up GitLab
 
 ### 1. Create Repository
-1. Go to GitLab
-2. Create New Project
-3. Push your code:
+1. Go to GitLab.com and sign in
+2. Click "New project" > "Create blank project"
+3. Fill in:
+   - Project name
+   - Set visibility to Public or Private
+   - Initialize with README (optional)
+4. Push your code:
 ```bash
 git init
 git add .
@@ -144,14 +176,8 @@ git push
 ### Basic Pipeline
 ```yaml
 stages:
-  - test
   - build
-
-test-app:
-  stage: test
-  script:
-    - npm install
-    - npm test
+  - deploy
 
 build-app:
   stage: build
@@ -162,7 +188,6 @@ build-app:
 ### Multi-Stage Pipeline
 ```yaml
 stages:
-  - test
   - build
   - deploy
 
@@ -172,12 +197,6 @@ include:
 variables:
   DOCKER_REGISTRY: ${CI_REGISTRY}
   DOCKER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
-
-test:
-  stage: test
-  script:
-    - npm install
-    - npm test
 
 build:
   stage: build
@@ -215,15 +234,10 @@ deploy:
     - build
 ```
 
-## Commands Cheat Sheet
+## Useful Commands
 
 ```bash
-# GitLab CI
-gitlab-runner exec docker job-name  # Test job locally
-gitlab-runner list                  # List runners
-gitlab-runner verify                # Check runner status
-
-# Docker
+# Docker (for local testing)
 docker build -t name .              # Build image
 docker push name                    # Push image
 docker run name                     # Run container
@@ -233,6 +247,8 @@ kubectl apply -f file.yaml          # Apply manifest
 kubectl get pods                    # Check pods
 kubectl logs pod-name              # View logs
 ```
+
+Note: You don't need to worry about GitLab runners! GitLab.com provides shared runners that will automatically run your pipeline. This is one of the benefits of using GitLab.com - the infrastructure is managed for you.
 
 ## Next Steps
 
