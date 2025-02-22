@@ -33,8 +33,8 @@ docker compose up
 ```
 
 2. Access the application:
-- Frontend: http://localhost:80
-- Backend API: http://localhost:3000
+- Frontend: http://localhost:3000 (React dev server)
+- Backend API: http://localhost:3001
 
 ## Project Structure
 ```
@@ -55,7 +55,7 @@ docker compose up
 
 ### Frontend (.env)
 ```
-REACT_APP_API_URL=http://localhost:3000/api
+REACT_APP_API_URL=http://localhost:3001/api
 ```
 
 ### Backend (.env)
@@ -82,15 +82,19 @@ docker compose up -d
 
 ### Development
 ```bash
+# Local development with Docker (recommended)
+docker compose up -d
+
+# Manual development setup (alternative)
 # Frontend development
 cd frontend
 npm install
-npm start
+npm start  # Runs on http://localhost:3000
 
 # Backend development
 cd backend
 npm install
-npm run dev
+npm run dev  # Runs on http://localhost:3001
 ```
 
 ### Testing
