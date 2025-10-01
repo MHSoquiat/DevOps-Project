@@ -7,7 +7,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+  const API_URL = process.env.REACT_APP_API_URL || '';
 
   useEffect(() => {
     fetchTasks();
@@ -17,7 +17,15 @@ function App() {
     try {
       const response = await fetch(`${API_URL}/tasks`);
       const data = await response.json();
-      setTasks(data);
+
+      // Ensure it's always an array
+      if (Array.isArray(data)) {
+        setTasks(data);
+      } else {
+        console.error("Unexpected response:", data);
+        setTasks([]); // fallback to empty list
+      }
+
       setLoading(false);
     } catch (err) {
       setError('Failed to fetch tasks');
