@@ -14,20 +14,20 @@ release-frontend:
   before_script:
     - npm install -g semantic-release @semantic-release/git @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/gitlab
     - git remote set-url origin https://oauth2:${GITLAB_TOKEN}@gitlab.com/sokii1/app-pipeline.git
+    - git fetch --all --tags
+    - git fetch origin "refs/notes/*:refs/notes/*"
   script:
     - cd app/frontend
     - VERSION=$(npx semantic-release --branches main --tag-format 'frontend-v${version}' | grep -oP '(?<=frontend-v)[0-9]+\.[0-9]+\.[0-9]+')
     - cd $CI_PROJECT_DIR
     - echo "VERSION=$VERSION" > frontend.env
   artifacts:
-    paths:
-      - frontend.env
     reports:
       dotenv: frontend.env
-    expire_in: 1 hour
+    expire_in: 10 mins
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-    - changes:
+      changes:
         - app/frontend/**/*
 
 build-frontend:
@@ -45,7 +45,7 @@ build-frontend:
     - docker push $CI_REGISTRY_IMAGE/frontend:$VERSION
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-    - changes:
+      changes:
         - app/frontend/**/*
 
 # ----------------- BACKEND -----------------
@@ -55,20 +55,20 @@ release-backend:
   before_script:
     - npm install -g semantic-release @semantic-release/git @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/gitlab
     - git remote set-url origin https://oauth2:${GITLAB_TOKEN}@gitlab.com/sokii1/app-pipeline.git
+    - git fetch --all --tags
+    - git fetch origin "refs/notes/*:refs/notes/*"
   script:
     - cd app/backend
     - VERSION=$(npx semantic-release --branches main --tag-format 'backend-v${version}' | grep -oP '(?<=backend-v)[0-9]+\.[0-9]+\.[0-9]+')
     - cd $CI_PROJECT_DIR
     - echo "VERSION=$VERSION" > backend.env
   artifacts:
-    paths:
-      - backend.env
     reports:
       dotenv: backend.env
-    expire_in: 1 hour
+    expire_in: 10 mins
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-    - changes:
+      changes:
         - app/backend/**/*
 
 build-backend:
@@ -86,7 +86,7 @@ build-backend:
     - docker push $CI_REGISTRY_IMAGE/backend:$VERSION
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-    - changes:
+      changes:
         - app/backend/**/*
 
 # ----------------- DEPLOY -----------------
