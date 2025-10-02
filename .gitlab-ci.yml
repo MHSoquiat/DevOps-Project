@@ -47,7 +47,7 @@ deploy-dev:
   stage: deploy
   image: mikefarah/yq:4
   script:
-    - VERSION=$(echo $CI_COMMIT_SHA | cut -c1-5)
+    - VERSION=${CI_COMMIT_SHA:0:5}
     - echo "Using tag $VERSION"
     - git clone https://oauth2:${CI_JOB_TOKEN}@gitlab.com/sokii1/helm-charts.git
     - cd helm-charts/task-app
@@ -71,3 +71,4 @@ deploy-dev:
   when: manual
   only:
     - main
+
