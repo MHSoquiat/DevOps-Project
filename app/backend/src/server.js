@@ -102,7 +102,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something broke!' });
+  res.status(500).json({ error: 'FUCK YOU SOMETHING IS HAPPENING WRONG!' });
 });
 
 // Start server
