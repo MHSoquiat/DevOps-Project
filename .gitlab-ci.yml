@@ -20,7 +20,8 @@ release-frontend:
     - cd app/frontend
     - VERSION=$(npx semantic-release --branches main --tag-format 'frontend-v${version}' | grep -oP '(?<=frontend-v)[0-9]+\.[0-9]+\.[0-9]+')
     - cd $CI_PROJECT_DIR
-    - echo "VERSION=$VERSION" > frontend.env
+    - if [ -z "$VERSION" ]; then echo "VERSION=0.0.0" > frontend.env; else echo "VERSION=$VERSION" > frontend.env; fi
+    - cat frontend.env
   artifacts:
     reports:
       dotenv: frontend.env
@@ -61,7 +62,8 @@ release-backend:
     - cd app/backend
     - VERSION=$(npx semantic-release --branches main --tag-format 'backend-v${version}' | grep -oP '(?<=backend-v)[0-9]+\.[0-9]+\.[0-9]+')
     - cd $CI_PROJECT_DIR
-    - echo "VERSION=$VERSION" > backend.env
+    - if [ -z "$VERSION" ]; then echo "VERSION=0.0.0" > backend.env; else echo "VERSION=$VERSION" > backend.env; fi
+    - cat backend.env
   artifacts:
     reports:
       dotenv: backend.env
