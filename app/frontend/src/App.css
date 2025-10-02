@@ -97,7 +97,7 @@ h1 {
 }
 
 .task-item[data-status='DONE'] {
-  border-left: 4px solid #75fc95;
+  border-left: 4px solid #02fb3c;
 }
 
 /* Loading and error states */
