@@ -20,8 +20,9 @@ release-frontend:
     - echo "VERSION=$VERSION" >> $CI_PROJECT_DIR/frontend.env
     - if [ -n "$VERSION" ]; then echo "VERSION=$VERSION" > $CI_PROJECT_DIR/frontend.env; fi
   artifacts:
-    reports:
-      dotenv: frontend.env
+    paths:
+      - app/frontend/frontend.env
+    expire_in: 1 hour
     when: on_success
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -36,6 +37,7 @@ build-frontend:
   dependencies:
     - release-frontend
   script:
+    - cd app/frontend
     - source frontend.env
     - echo "Building frontend version $VERSION ..."
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -59,8 +61,9 @@ release-backend:
     - echo "VERSION=$VERSION" >> $CI_PROJECT_DIR/backend.env
     - if [ -n "$VERSION" ]; then echo "VERSION=$VERSION" > $CI_PROJECT_DIR/backend.env; fi
   artifacts:
-    reports:
-      dotenv: backend.env
+    paths:
+      - app/backend/backend.env
+    expire_in: 1 hour
     when: on_success
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -75,6 +78,7 @@ build-backend:
   dependencies:
     - release-backend
   script:
+    - cd app/backend
     - source backend.env
     - echo "Building backend version $VERSION ..."
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
