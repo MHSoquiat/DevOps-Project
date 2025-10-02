@@ -17,13 +17,14 @@ release-frontend:
   script:
     - cd app/frontend
     - VERSION=$(npx semantic-release --branches main --tag-format 'frontend-v${version}' | grep -oP '(?<=frontend-v)[0-9]+\.[0-9]+\.[0-9]+')
-    - echo "VERSION=$VERSION" >> $CI_PROJECT_DIR/frontend.env
-    - if [ -n "$VERSION" ]; then echo "VERSION=$VERSION" > $CI_PROJECT_DIR/frontend.env; fi
+    - cd $CI_PROJECT_DIR
+    - echo "VERSION=$VERSION" > frontend.env
   artifacts:
     paths:
-      - app/frontend/frontend.env
+      - frontend.env
+    reports:
+      dotenv: frontend.env
     expire_in: 1 hour
-    when: on_success
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - changes:
@@ -37,7 +38,6 @@ build-frontend:
   dependencies:
     - release-frontend
   script:
-    - cd app/frontend
     - source frontend.env
     - echo "Building frontend version $VERSION ..."
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -58,13 +58,14 @@ release-backend:
   script:
     - cd app/backend
     - VERSION=$(npx semantic-release --branches main --tag-format 'backend-v${version}' | grep -oP '(?<=backend-v)[0-9]+\.[0-9]+\.[0-9]+')
-    - echo "VERSION=$VERSION" >> $CI_PROJECT_DIR/backend.env
-    - if [ -n "$VERSION" ]; then echo "VERSION=$VERSION" > $CI_PROJECT_DIR/backend.env; fi
+    - cd $CI_PROJECT_DIR
+    - echo "VERSION=$VERSION" > backend.env
   artifacts:
     paths:
-      - app/backend/backend.env
+      - backend.env
+    reports:
+      dotenv: backend.env
     expire_in: 1 hour
-    when: on_success
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - changes:
@@ -78,7 +79,6 @@ build-backend:
   dependencies:
     - release-backend
   script:
-    - cd app/backend
     - source backend.env
     - echo "Building backend version $VERSION ..."
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
