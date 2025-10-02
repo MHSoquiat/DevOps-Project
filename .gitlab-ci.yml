@@ -53,8 +53,8 @@ deploy-dev:
     - cd helm-charts/task-app
 
     # Update frontend and backend tags in values.yaml
-    - yq e -i ".frontend.image.tag = \"$VERSION\"" values.yaml
-    - yq e -i ".backend.image.tag = \"$VERSION\"" values.yaml
+    - yq e -i ".frontend.image.tag = \"${VERSION}\"" values.yaml
+    - yq e -i ".backend.image.tag = \"${VERSION}\"" values.yaml
 
     # Commit & push the updated values
     - git config user.email "$GITLAB_USER_EMAIL"
@@ -62,6 +62,9 @@ deploy-dev:
     - git add values.yaml
     - git commit -m "chore update image tags to $VERSION [skip ci]" || echo "No changes to commit"
     - git push origin main
+
+    # Deploy with updated values
+    - helm upgrade --install myapp . -f values.yaml
 
   environment:
     name: development
