@@ -1,80 +1,87 @@
-# Basic pipeline structure
 stages:
-  - build
   - release
+  - build
   - deploy
 
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
 
+# ----------------- FRONTEND -----------------
+release-frontend:
+  stage: release
+  image: node:18
+  before_script:
+    - npm install -g semantic-release @semantic-release/git @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/gitlab
+    - git remote set-url origin https://oauth2:${GITLAB_TOKEN}@gitlab.com/sokii1/app-pipeline.git
+  script:
+    - cd app/frontend
+    - VERSION=$(npx semantic-release --branches main --tag-format 'frontend-v${version}' | grep -oP '(?<=frontend-v)[0-9]+\.[0-9]+\.[0-9]+')
+    - echo "VERSION=$VERSION" >> $CI_PROJECT_DIR/frontend.env
+  artifacts:
+    reports:
+      dotenv: frontend.env
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - changes:
+        - app/frontend/**/*
+
 build-frontend:
   stage: build
   image: docker:20.10.16
   services:
     - docker:20.10.16-dind
+  dependencies:
+    - release-frontend
   script:
-    - echo "Building frontend ..."
+    - source frontend.env
+    - echo "Building frontend version $VERSION ..."
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA app/frontend
-    - docker push $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
-  rules:
-    - changes:
-      - app/frontend/**/*
-
-release-frontend:
-  stage: release
-  image: node:18
-  before_script:
-    - npm install -g semantic-release @semantic-release/git @semantic-release/commit-analyzer @semantic-release/release-notes-generator
-    - git remote set-url origin https://oauth2:${GITLAB_TOKEN}@gitlab.com/sokii1/app-pipeline.git
-  script:
-    - cd app/frontend
-    - VERSION=$(npx semantic-release --branches main --tag-format 'frontend-v${version}' | grep -oP '(?<=frontend-v)[0-9]+\.[0-9]+\.[0-9]+')
-    - echo "Released frontend version $VERSION"
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
-    - docker tag $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/frontend:$VERSION
+    - docker build -t $CI_REGISTRY_IMAGE/frontend:$VERSION app/frontend
     - docker push $CI_REGISTRY_IMAGE/frontend:$VERSION
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - changes:
         - app/frontend/**/*
 
+# ----------------- BACKEND -----------------
+release-backend:
+  stage: release
+  image: node:18
+  before_script:
+    - npm install -g semantic-release @semantic-release/git @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/gitlab
+    - git remote set-url origin https://oauth2:${GITLAB_TOKEN}@gitlab.com/sokii1/app-pipeline.git
+  script:
+    - cd app/backend
+    - VERSION=$(npx semantic-release --branches main --tag-format 'backend-v${version}' | grep -oP '(?<=backend-v)[0-9]+\.[0-9]+\.[0-9]+')
+    - echo "VERSION=$VERSION" >> $CI_PROJECT_DIR/backend.env
+  artifacts:
+    reports:
+      dotenv: backend.env
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - changes:
+        - app/backend/**/*
 
 build-backend:
   stage: build
   image: docker:20.10.16
   services:
     - docker:20.10.16-dind
+  dependencies:
+    - release-backend
   script:
-    - echo "Building backend ..."
+    - source backend.env
+    - echo "Building backend version $VERSION ..."
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA app/backend
-    - docker push $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA
-  rules:
-    - changes:
-      - app/backend/**/*
-
-release-backend:
-  stage: release
-  image: node:18
-  before_script:
-    - npm install -g semantic-release @semantic-release/git @semantic-release/commit-analyzer @semantic-release/release-notes-generator
-    - git remote set-url origin https://oauth2:${GITLAB_TOKEN}@gitlab.com/sokii1/app-pipeline.git
-  script:
-    - cd app/backend
-    - VERSION=$(npx semantic-release --branches main --tag-format 'backend-v${version}' | grep -oP '(?<=backend-v)[0-9]+\.[0-9]+\.[0-9]+')
-    - echo "Released backend version $VERSION"
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA
-    - docker tag $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/backend:$VERSION
+    - docker build -t $CI_REGISTRY_IMAGE/backend:$VERSION app/backend
     - docker push $CI_REGISTRY_IMAGE/backend:$VERSION
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - changes:
         - app/backend/**/*
 
+# ----------------- DEPLOY -----------------
 deploy-dev:
   stage: deploy
   script:
