@@ -45,12 +45,27 @@ build-backend:
 # ----------------- DEPLOY -----------------
 deploy-dev:
   stage: deploy
+  image: mikefarah/yq:4
   script:
-    - echo "Deploy using Helm repo..."
-    - git clone https://oauth2:${CI_JOB_TOKEN}@gitlab.com/YOUR_GROUP/helm-charts.git
-    - helm upgrade --install myapp ./helm-charts/app -f ./helm-charts/app/values-dev.yaml
+    - VERSION=$(echo $CI_COMMIT_SHA | cut -c1-5)
+    - echo "Using tag $VERSION"
+    - git clone https://oauth2:${CI_JOB_TOKEN}@gitlab.com/sokii1/helm-charts.git
+    - cd helm-charts/task-app
+
+    # Update frontend and backend tags in values-dev.yaml
+    - yq e -i ".frontend.image.tag = \"$VERSION\"" values.yaml
+    - yq e -i ".backend.image.tag = \"$VERSION\"" values.yaml
+
+    # Commit & push the updated values
+    - git config user.email "ci-bot@gitlab.com"
+    - git config user.name "CI Bot"
+    - git add values-dev.yaml
+    - git commit -m "update image tags to $VERSION [skip ci]" || echo "No changes to commit"
+    - git push origin main
+
   environment:
     name: development
   when: manual
   only:
-    - develop
+    - main
+
