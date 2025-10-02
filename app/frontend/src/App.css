@@ -89,7 +89,7 @@ h1 {
 
 /* Status colors */
 .task-item[data-status='TODO'] {
-  border-left: 4px solid #ffc107;
+  border-left: 4px solid #f4d780;
 }
 
 .task-item[data-status='IN_PROGRESS'] {
