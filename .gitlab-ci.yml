@@ -65,7 +65,7 @@ release-backend:
   artifacts:
     reports:
       dotenv: backend.env
-    expire_in: 10 mins
+    expire_in: 10 mins 
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       changes:
