@@ -27,14 +27,19 @@ release-frontend:
   image: node:18
   before_script:
     - npm install -g semantic-release @semantic-release/git @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+    - git remote set-url origin https://oauth2:${GITLAB_TOKEN}@gitlab.com/sokii1/app-pipeline.git
   script:
     - cd app/frontend
-    - VERSION=$(npx semantic-release --branches main --tag-format 'frontend-v${version}') | grep -oP '(?<=frontend-v)[0-9]+\.[0-9]+\.[0-9]+')
-    - echo "Released frontend image version $VERSION"
+    - VERSION=$(npx semantic-release --branches main --tag-format 'frontend-v${version}' | grep -oP '(?<=frontend-v)[0-9]+\.[0-9]+\.[0-9]+')
+    - echo "Released frontend version $VERSION"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
     - docker tag $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/frontend:$VERSION
     - docker push $CI_REGISTRY_IMAGE/frontend:$VERSION
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - changes:
+        - app/frontend/**/*
 
 
 build-backend:
@@ -56,6 +61,7 @@ release-backend:
   image: node:18
   before_script:
     - npm install -g semantic-release @semantic-release/git @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+    - git remote set-url origin https://oauth2:${GITLAB_TOKEN}@gitlab.com/sokii1/app-pipeline.git
   script:
     - cd app/backend
     - VERSION=$(npx semantic-release --branches main --tag-format 'backend-v${version}' | grep -oP '(?<=backend-v)[0-9]+\.[0-9]+\.[0-9]+')
@@ -65,8 +71,9 @@ release-backend:
     - docker tag $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/backend:$VERSION
     - docker push $CI_REGISTRY_IMAGE/backend:$VERSION
   rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
     - changes:
-      - app/backend/**/*
+        - app/backend/**/*
 
 deploy-dev:
   stage: deploy
