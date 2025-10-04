@@ -47,21 +47,24 @@ deploy-dev:
   stage: deploy
   image: mikefarah/yq:4
   script:
-    - VERSION=$(echo $CI_COMMIT_SHA | cut -c1-5)
+    - VERSION=${CI_COMMIT_SHA:0:5}
     - echo "Using tag $VERSION"
     - git clone https://oauth2:${CI_JOB_TOKEN}@gitlab.com/sokii1/helm-charts.git
     - cd helm-charts/task-app
 
-    # Update frontend and backend tags in values-dev.yaml
-    - yq e -i ".frontend.image.tag = \"$VERSION\"" values.yaml
-    - yq e -i ".backend.image.tag = \"$VERSION\"" values.yaml
+    # Update frontend and backend tags in values.yaml
+    - yq e -i ".frontend.image.tag = \"${VERSION}\"" values.yaml
+    - yq e -i ".backend.image.tag = \"${VERSION}\"" values.yaml
 
     # Commit & push the updated values
-    - git config user.email "ci-bot@gitlab.com"
-    - git config user.name "CI Bot"
-    - git add values-dev.yaml
-    - git commit -m "update image tags to $VERSION [skip ci]" || echo "No changes to commit"
+    - git config user.email "$GITLAB_USER_EMAIL"
+    - git config user.name "$GITLAB_USER_NAME"
+    - git add values.yaml
+    - git commit -m "chore update image tags to $VERSION [skip ci]" || echo "No changes to commit"
     - git push origin main
+
+    # Deploy with updated values
+    - helm upgrade --install myapp . -f values.yaml
 
   environment:
     name: development
