@@ -19,6 +19,11 @@ build-frontend:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/frontend:$VERSION .
     - docker push $CI_REGISTRY_IMAGE/frontend:$VERSION
+  artifacts:
+    reports:
+      dotenv: frontend.env
+  after_script:
+    - echo "FRONTEND_BUILT=true" >> frontend.env
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       changes:
@@ -37,6 +42,11 @@ build-backend:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE/backend:$VERSION .
     - docker push $CI_REGISTRY_IMAGE/backend:$VERSION
+  artifacts:
+    reports:
+      dotenv: backend.env
+  after_script:
+    - echo "BACKEND_BUILT=true" >> backend.env
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       changes:
@@ -45,50 +55,46 @@ build-backend:
 # ----------------- DEPLOY -----------------
 deploy-dev:
   stage: deploy
-  image: mikefarah/yq:4
+  image: alpine:3.20
   needs:
     - job: build-frontend
       optional: true
+      artifacts: true
     - job: build-backend
       optional: true
-  rules:
-    - changes:
-        - app/frontend/**/*
-        - app/backend/**/*
+      artifacts: true
   script:
-    - echo "Updating Helm Values"
+    - apk add --no-cache git yq helm
+    - VERSION=${CI_COMMIT_SHA:0:5}
+    - echo "Using tag $VERSION"
 
-    - VERSION=$(echo $CI_COMMIT_SHA | cut -c1-5)
-    - echo "Using image tag $VERSION"
-
-    - git clone https://oauth2:${CI_JOB_TOKEN}@gitlab.com/sokii1/helm-charts.git
+    - git clone https://${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD}@gitlab.com/sokii1/helm-charts.git
     - cd helm-charts/task-app
 
-    - CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $CI_COMMIT_SHA)
-    - echo "Changed files $CHANGED_FILES"
-
-    - if echo "$CHANGED_FILES" | grep -q "^app/frontend/"; then
-        echo "Frontend changed — updating frontend image tag...";
-        yq e -i ".frontend.image.tag = \"$VERSION\"" values.yaml;
+    # Update frontend tag only if frontend was built
+    - if [ "$FRONTEND_BUILT" = "true" ]; then
+        echo "Frontend changed — updating tag...";
+        yq e -i ".frontend.image.tag = \"${VERSION}\"" values.yaml;
       else
         echo "Frontend unchanged — keeping existing tag.";
       fi
 
-    - if echo "$CHANGED_FILES" | grep -q "^app/backend/"; then
-        echo "Backend changed — updating backend image tag...";
-        yq e -i ".backend.image.tag = \"$VERSION\"" values.yaml;
+    # Update backend tag only if backend was built
+    - if [ "$BACKEND_BUILT" = "true" ]; then
+        echo "Backend changed — updating tag...";
+        yq e -i ".backend.image.tag = \"${VERSION}\"" values.yaml;
       else
         echo "Backend unchanged — keeping existing tag.";
       fi
 
+    # Commit only if there are actual tag changes
     - if ! git diff --quiet; then
-        echo "Detected changes in values.yaml — committing and pushing...";
-        git config user.name "gitlab-ci";
-        git config user.email "gitlab-ci@example.com";
+        echo "Detected image tag changes — committing and pushing...";
+        git config user.email "$GITLAB_USER_EMAIL";
+        git config user.name "$GITLAB_USER_NAME";
         git add values.yaml;
-        git commit -m "Update image tags to $VERSION";
+        git commit -m "chore update image tags to $VERSION [skip ci]" || echo "No changes to commit";
         git push origin main;
       else
-        echo "No image tag changes detected — skipping commit and deploy.";
+        echo "No changes detected — skipping commit.";
       fi
-
