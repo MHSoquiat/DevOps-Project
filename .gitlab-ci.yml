@@ -45,25 +45,51 @@ build-backend:
 # ----------------- DEPLOY -----------------
 deploy-dev:
   stage: deploy
-  image: alpine:3.20
+  image: mikefarah/yq:4
+  rules:
+    - changes:
+        - frontend/**/*
+        - backend/**/*
+    - when: never  # prevent from running if no changes
   script:
-    - apk add --no-cache git yq helm
-    - VERSION=${CI_COMMIT_SHA:0:5}
-    - echo "Using tag $VERSION"
-    - git clone https://${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD}@gitlab.com/sokii1/helm-charts.git
+    - echo "Updating Helm Values"
+
+    # Generate short SHA for tag
+    - VERSION=$(echo $CI_COMMIT_SHA | cut -c1-5)
+    - echo "Using image tag $VERSION"
+
+    # Clone the Helm chart repository
+    - git clone https://oauth2:${CI_JOB_TOKEN}@gitlab.com/sokii1/helm-charts.git
     - cd helm-charts/task-app
 
-    - yq e -i ".frontend.image.tag = \"${VERSION}\"" values.yaml
-    - yq e -i ".backend.image.tag = \"${VERSION}\"" values.yaml
+    # Get list of changed files in this commit
+    - CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $CI_COMMIT_SHA)
+    - echo "Changed files $CHANGED_FILES"
 
-    - git config user.email "$GITLAB_USER_EMAIL"
-    - git config user.name "$GITLAB_USER_NAME"
-    - git add values.yaml
-    - git commit -m "chore update image tags to $VERSION [skip ci]" || echo "No changes to commit"
-    - git push origin main
+    # Conditionally update frontend tag
+    - if echo "$CHANGED_FILES" | grep -q "^frontend/"; then
+        echo "Frontend changed — updating frontend image tag...";
+        yq e -i ".frontend.image.tag = \"$VERSION\"" values.yaml;
+      else
+        echo "Frontend unchanged — keeping existing tag.";
+      fi
 
-  environment:
-    name: development
-  when: manual
-  only:
-    - main
+    # Conditionally update backend tag
+    - if echo "$CHANGED_FILES" | grep -q "^backend/"; then
+        echo "Backend changed — updating backend image tag...";
+        yq e -i ".backend.image.tag = \"$VERSION\"" values.yaml;
+      else
+        echo "Backend unchanged — keeping existing tag.";
+      fi
+
+    # Check if there are any updates before committing
+    - if ! git diff --quiet; then
+        echo "Detected changes in values.yaml — committing and pushing...";
+        git config user.name "gitlab-ci";
+        git config user.email "gitlab-ci@example.com";
+        git add values.yaml;
+        git commit -m "Update image tags to $VERSION";
+        git push origin main;
+      else
+        echo "No image tag changes detected — skipping commit and deploy.";
+      fi
