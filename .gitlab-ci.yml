@@ -46,43 +46,41 @@ build-backend:
 deploy-dev:
   stage: deploy
   image: mikefarah/yq:4
+  needs:
+    - job: build-frontend
+      optional: true
+    - job: build-backend
+      optional: true
   rules:
     - changes:
-        - frontend/**/*
-        - backend/**/*
-    - when: never  # prevent from running if no changes
+        - app/frontend/**/*
+        - app/backend/**/*
   script:
     - echo "Updating Helm Values"
 
-    # Generate short SHA for tag
     - VERSION=$(echo $CI_COMMIT_SHA | cut -c1-5)
     - echo "Using image tag $VERSION"
 
-    # Clone the Helm chart repository
     - git clone https://oauth2:${CI_JOB_TOKEN}@gitlab.com/sokii1/helm-charts.git
     - cd helm-charts/task-app
 
-    # Get list of changed files in this commit
     - CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $CI_COMMIT_SHA)
     - echo "Changed files $CHANGED_FILES"
 
-    # Conditionally update frontend tag
-    - if echo "$CHANGED_FILES" | grep -q "^frontend/"; then
+    - if echo "$CHANGED_FILES" | grep -q "^app/frontend/"; then
         echo "Frontend changed — updating frontend image tag...";
         yq e -i ".frontend.image.tag = \"$VERSION\"" values.yaml;
       else
         echo "Frontend unchanged — keeping existing tag.";
       fi
 
-    # Conditionally update backend tag
-    - if echo "$CHANGED_FILES" | grep -q "^backend/"; then
+    - if echo "$CHANGED_FILES" | grep -q "^app/backend/"; then
         echo "Backend changed — updating backend image tag...";
         yq e -i ".backend.image.tag = \"$VERSION\"" values.yaml;
       else
         echo "Backend unchanged — keeping existing tag.";
       fi
 
-    # Check if there are any updates before committing
     - if ! git diff --quiet; then
         echo "Detected changes in values.yaml — committing and pushing...";
         git config user.name "gitlab-ci";
@@ -93,3 +91,4 @@ deploy-dev:
       else
         echo "No image tag changes detected — skipping commit and deploy.";
       fi
+
