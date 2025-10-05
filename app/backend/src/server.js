@@ -32,7 +32,7 @@ app.get('/api/tasks', async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching tasks:', err);
-    res.status(500).json({ error: 'Failed to fetch tasks' });
+    res.status(500).json({ error: 'Failed to fetch jobs' });
   }
 });
 
