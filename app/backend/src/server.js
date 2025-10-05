@@ -41,7 +41,7 @@ app.post('/api/tasks', async (req, res) => {
   const { title, description } = req.body;
 
   if (!title) {
-    return res.status(400).json({ error: 'Title is required' });
+    return res.status(400).json({ error: 'Title is necessary' });
   }
 
   try {

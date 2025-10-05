@@ -93,7 +93,7 @@ h1 {
 }
 
 .task-item[data-status='IN_PROGRESS'] {
-  border-left: 4px solid #17a2b8;
+  border-left: 4px solid #3cddf6;
 }
 
 .task-item[data-status='DONE'] {
