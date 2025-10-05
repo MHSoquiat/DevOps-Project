@@ -50,7 +50,7 @@ deploy-dev:
     - apk add --no-cache git yq helm
     - VERSION=${CI_COMMIT_SHA:0:5}
     - echo "Using tag $VERSION"
-    - git clone https://oauth2:${CI_JOB_TOKEN}@gitlab.com/sokii1/helm-charts.git
+    - git clone https://${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD}@gitlab.com/sokii1/helm-charts.git
     - cd helm-charts/task-app
 
     - yq e -i ".frontend.image.tag = \"${VERSION}\"" values.yaml
