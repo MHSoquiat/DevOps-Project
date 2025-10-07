@@ -2,6 +2,16 @@
 
 All notable changes and updates to this repository will be documented in this file.
 
+## [1.4.0] - 2025-10-7
+
+### Added
+- **application.yaml**: Configuration for ArgoCD
+
+## [1.3.0] - 2025-10-5
+
+### Configured
+- **.gitlab-ci.yml**: Added configuration regarding updating tag values in helm charts. 
+
 ## [1.2.0] - 2025-10-1
 
 ### Added 
