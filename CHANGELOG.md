@@ -2,6 +2,11 @@
 
 All notable changes and updates to this repository will be documented in this file.
 
+## [1.4.1] - 2025-10-8
+
+### Patch
+- **app/backend/src/server.js**: Changed the path of health from /health to /api/health
+
 ## [1.4.0] - 2025-10-7
 
 ### Added
