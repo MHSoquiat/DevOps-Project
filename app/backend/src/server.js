@@ -19,7 +19,7 @@ const pool = new Pool({
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy' });
 });
 
