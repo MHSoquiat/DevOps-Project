@@ -1,7 +1,23 @@
+require('dd-trace').init({
+  service: 'task-app-backend',
+  env: process.env.NODE_ENV || 'production',
+  hostname: 'datadog-agent.datadog.svc.cluster.local', // The Kubernetes service name of your Datadog agent
+  port: 8126, // Default Datadog APM port
+  logInjection: true, // Enables trace logs correlation
+  runtimeMetrics: true, // Enables runtime metrics
+});
+
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
 require('dotenv').config();
+
+const { StatsD } = require('hot-shots');
+const statsd = new StatsD({
+  host: process.env.DD_AGENT_HOST || 'datadog-agent.datadog.svc.cluster.local',
+  port: 8125, // Default DogStatsD UDP port
+  globalTags: { service: 'task-app-backend', env: process.env.NODE_ENV || 'production' },
+});
 
 const app = express();
 
@@ -20,6 +36,7 @@ const pool = new Pool({
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
+  statsd.increment('health.checks');
   res.json({ status: 'healthy' });
 });
 
@@ -29,9 +46,11 @@ app.get('/api/tasks', async (req, res) => {
     const result = await pool.query(
       'SELECT * FROM tasks ORDER BY created_at DESC'
     );
+    statsd.increment('tasks.fetched');
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching tasks:', err);
+    statsd.increment('tasks.errors');
     res.status(500).json({ error: 'Failed to fetch jobs' });
   }
 });
@@ -49,9 +68,11 @@ app.post('/api/tasks', async (req, res) => {
       'INSERT INTO tasks (title, description) VALUES ($1, $2) RETURNING *',
       [title, description]
     );
+    statsd.increment('tasks.created');
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error('Error creating task:', err);
+    statsd.increment('tasks.errors');
     res.status(500).json({ error: 'Failed to create task' });
   }
 });
@@ -71,9 +92,11 @@ app.put('/api/tasks/:id', async (req, res) => {
       return res.status(404).json({ error: 'Task not found' });
     }
 
+    statsd.increment('tasks.updated');
     res.json(result.rows[0]);
   } catch (err) {
     console.error('Error updating task:', err);
+    statsd.increment('tasks.errors');
     res.status(500).json({ error: 'Failed to update task' });
   }
 });
@@ -92,9 +115,11 @@ app.delete('/api/tasks/:id', async (req, res) => {
       return res.status(404).json({ error: 'Task not found' });
     }
 
+    statsd.increment('tasks.deleted');
     res.json({ message: 'Task deleted successfully' });
   } catch (err) {
     console.error('Error deleting task:', err);
+    statsd.increment('tasks.errors');
     res.status(500).json({ error: 'Failed to delete task' });
   }
 });
@@ -102,6 +127,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
+  statsd.increment('server.errors');
   res.status(500).json({ error: 'FUCK YOU SOMETHING IS HAPPENING WRONG!' });
 });
 
@@ -109,6 +135,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  statsd.gauge('server.start', 1);
 });
 
 module.exports = app;

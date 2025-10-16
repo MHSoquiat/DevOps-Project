@@ -2,6 +2,13 @@
 
 All notable changes and updates to this repository will be documented in this file.
 
+## [1.5.0] - 2025-10-16
+
+### Added
+- **Datadog**: Added datadog config on application.yaml
+- **server.js**: Added configuration for Datadog APM and Datadog StatsD
+- **package.json**: added config for Datadog APM and Datadog StatsD
+
 ## [1.4.1] - 2025-10-8
 
 ### Patch
