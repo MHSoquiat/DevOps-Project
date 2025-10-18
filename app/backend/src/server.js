@@ -128,7 +128,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
 app.use((err, req, res, next) => {
   console.error(err.stack);
   statsd.increment('server.errors');
-  res.status(500).json({ error: 'FUCK YOU SOMETHING IS HAPPENING WRONG!' });
+  res.status(500).json({ error: 'Internal Server Error!' });
 });
 
 // Start server
