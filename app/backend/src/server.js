@@ -1,10 +1,10 @@
 require('dd-trace').init({
   service: 'task-app-backend',
   env: process.env.NODE_ENV || 'production',
-  hostname: 'datadog-agent.datadog.svc.cluster.local', // The Kubernetes service name of your Datadog agent
+  hostname: 'datadog-agent.datadog.svc.cluster.local', 
   port: 8126, // Default Datadog APM port
-  logInjection: true, // Enables trace logs correlation
-  runtimeMetrics: true, // Enables runtime metrics
+  logInjection: true, 
+  runtimeMetrics: true, 
 });
 
 const express = require('express');

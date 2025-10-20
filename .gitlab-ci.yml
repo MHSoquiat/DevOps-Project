@@ -68,7 +68,7 @@ deploy-dev:
     - VERSION=${CI_COMMIT_SHA:0:5}
     - echo "Using tag $VERSION"
 
-    - git clone https://${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD}@gitlab.com/sokii1/helm-charts.git
+    - git clone https://${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD}@<GITLAB_MANIFEST_REPO_URL>.git
     - cd helm-charts/task-app
 
     # Update frontend tag only if frontend was built
