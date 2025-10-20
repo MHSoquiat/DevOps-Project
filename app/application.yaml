@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://gitlab.com/sokii1/helm-charts.git
+    repoURL: <Manifest-Repo-URL> # Change this to your manifest repository URL
     targetRevision: HEAD
     path: task-app  
   destination:
@@ -27,7 +27,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://gitlab.com/sokii1/helm-charts.git
+    repoURL: <Manifest-Repo-URL> # Change this to your manifest repository URL
     targetRevision: HEAD
     path: datadog
   destination:
