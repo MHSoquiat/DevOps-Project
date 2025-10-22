@@ -1,6 +1,6 @@
-# DevOps Capstone Project: 3-Tier Task Management Application
+# 3-Tier Task Management Application Deployed on AKS Cluster with Datadog Monitoring
 
-This repository contains a task management application and its complete DevOps implementation. The project demonstrates modern DevOps practices including containerization, Kubernetes orchestration, CI/CD pipelines, and GitOps workflows.
+This repository contains a task management application and its complete DevOps implementation. The project demonstrates modern DevOps practices including containerization, Kubernetes orchestration on Kubernetes, CI/CD pipelines, GitOps workflows, Observability with Datadog.
 
 ## Project Overview
 
@@ -10,28 +10,11 @@ This repository contains a task management application and its complete DevOps i
 - **Database**: PostgreSQL for data persistence
 
 ### DevOps Implementation
-- Local Kubernetes deployment
+- Azure Kubernetes deployment
 - Helm chart packaging
 - GitLab CI/CD pipeline
 - GitOps with ArgoCD
-
-## Quick Start
-
-1. **Local Development**
-```bash
-cd app
-docker compose up
-```
-Access the application at:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:3001
-
-2. **Kubernetes Deployment**
-- Follow the guides in the [docs](./docs) directory for:
-  - Local Kubernetes setup
-  - Helm chart deployment
-  - CI/CD pipeline configuration
-  - ArgoCD implementation
+- Datadog Monitoring and Observability
 
 ## Project Structure
 
@@ -50,88 +33,24 @@ Access the application at:
     └── 05-deployment.md     # Deployment guide
 ```
 
-## Implementation Requirements
-
-### 1. Local Kubernetes Environment (25%)
-- Local cluster setup (Minikube/kind/k3d)
-- Namespace configuration
-- Ingress setup
-
-### 2. Helm Chart Development (25%)
-- Application Helm charts
-- Configuration management
-- Secret handling
-
-### 3. GitLab CI Pipeline (25%)
-- Automated build pipeline
-- Container image management
-- Deployment automation
-
-### 4. ArgoCD Implementation (25%)
-- GitOps workflow
-- Application synchronization
-- Deployment management
-
 ## Documentation
 
 - [Application Guide](./app/README.md) - Application setup and development
 - [Quick Start Guide](./app/QUICKSTART.md) - Getting started quickly
 - [Implementation Guide](./docs/README.md) - DevOps implementation steps
 
-## Timeline
-
-### Week 1: Foundation
-- Days 1-2: Local Kubernetes setup
-- Days 3-4: Helm chart creation
-- Day 5: Review and documentation
-
-### Week 2: Implementation
-- Days 1-2: GitLab CI setup
-- Days 3-4: ArgoCD configuration
-- Day 5: Final testing
-
-## Evaluation Criteria
-
-### Basic Implementation (70-79%)
-- Working local cluster
-- Basic Helm deployment
-- Simple CI pipeline
-- ArgoCD connection
-
-### Proficient Implementation (80-89%)
-- Well-organized resources
-- Environment separation
-- Working CI/CD pipeline
-- Basic monitoring
-
-### Advanced Implementation (90-100%)
-- Multiple environments
-- Automated testing
-- Automated sync policies
-- Comprehensive documentation
-
-## Optional Features
-
-1. **Security** (+5%)
-   - Secret management
-   - RBAC configuration
-
-2. **Advanced Features** (+5%)
-   - Health monitoring
-   - Rollback strategies
-
-3. **Monitoring** (+5%)
-   - Health checks
-   - Logging setup
-
 ## Support
 
 Need assistance?
 1. Review the detailed documentation in the [docs](./docs) directory
 2. Check error messages and logs
-3. Participate in lab sessions
-4. Refer to official documentation:
+3. Refer to official documentation:
    - [Kubernetes](https://kubernetes.io/docs/)
+   - [AKS](https://learn.microsoft.com/en-us/azure/aks/)
    - [Helm](https://helm.sh/docs/)
    - [GitLab CI](https://docs.gitlab.com/ee/ci/)
    - [ArgoCD](https://argo-cd.readthedocs.io/)
+   - [Datadog](https://docs.datadoghq.com/)
+4. Contact me on the following platforms:
+   - [LinkedIn](https://www.linkedin.com/in/soqwapo/)
+   - [Email](soquiat.marc11@gmail.com)
