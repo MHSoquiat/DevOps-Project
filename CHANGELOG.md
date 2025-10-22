@@ -2,18 +2,14 @@
 
 All notable changes and updates to this repository will be documented in this file.
 
-<<<<<<< HEAD
-## [1.5.1] - 2025-10-20
+## [1.5.1] - 2025-10-22
 
 ### Patch
 - Updated the values to not display sensitive information in this repository. 
-=======
-## [1.5.1] - 2025-10-22
 
 ### Added
 - **backend**: Added datadog config for active users
 - **frontend**: Added datadog config for active users
->>>>>>> gitlab/main
 
 ## [1.5.0] - 2025-10-16
 
