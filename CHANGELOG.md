@@ -4,6 +4,9 @@ All notable changes and updates to this repository will be documented in this fi
 
 ## [1.5.1] - 2025-10-22
 
+### Modified
+- Modified Documentations
+
 ### Patch
 - Updated the values to not display sensitive information in this repository. 
 
