@@ -16,6 +16,12 @@ This repository contains a task management application and its complete DevOps i
 - GitOps with ArgoCD
 - Datadog Monitoring and Observability
 
+### Implementation Workflow
+
+Here is the implementation workflow for this project:
+
+![Implementation Workflow](output/arc-diagram.png)
+
 ## Project Structure
 
 ```

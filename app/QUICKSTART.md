@@ -100,13 +100,7 @@ Delete a task
 ## Next Steps
 
 Your task is to:
-1. Set up local Kubernetes
-2. Create Helm charts
-3. Configure CI/CD pipeline
-4. Implement GitOps with ArgoCD
-
-Remember:
-- The application code is complete
-- Focus on DevOps implementation
-- Ask questions in lab sessions
-- Keep it simple!
+1. Set up Azure Kubernetes Service Cluster
+2. Run Application through Helm
+3. Test the Pipeline by making changes
+4. Monitor Application in Datadog
