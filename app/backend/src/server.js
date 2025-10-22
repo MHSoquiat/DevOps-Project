@@ -20,10 +20,34 @@ const statsd = new StatsD({
 });
 
 const app = express();
+const activeUsers = new Map();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.use((req, res, next) => {
+  const userId = req.header('x-user-id');
+  if (userId) {
+    activeUsers.set(userId, Date.now());
+
+    // Report current active user count
+    statsd.gauge('app.active_users', activeUsers.size, ['service:task-app-backend']);
+  }
+  next();
+});
+
+// Periodically clean up users inactive for 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [userId, lastSeen] of activeUsers.entries()) {
+    if (now - lastSeen > 5 * 60 * 1000) { // 5 min inactivity
+      activeUsers.delete(userId);
+    }
+  }
+  statsd.gauge('app.active_users', activeUsers.size, ['service:task-app-backend']);
+}, 60 * 1000); // runs every minute
+
 
 // Database configuration
 const pool = new Pool({

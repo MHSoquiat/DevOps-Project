@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
+function getUserId() {
+  let userId = localStorage.getItem('userId');
+  if (!userId) {
+    userId = `user-${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('userId', userId);
+  }
+  return userId;
+}
+
 function App() {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({ title: '', description: '' });
@@ -8,6 +17,7 @@ function App() {
   const [error, setError] = useState(null);
 
   const API_URL = process.env.REACT_APP_API_URL || '';
+  const USER_ID = getUserId(); 
 
   useEffect(() => {
     fetchTasks();
@@ -15,7 +25,11 @@ function App() {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch(`${API_URL}/tasks`);
+      const response = await fetch(`${API_URL}/tasks`, {
+        headers: {
+          'x-user-id': USER_ID, 
+        },
+      });
       const data = await response.json();
 
       // Ensure it's always an array
@@ -40,6 +54,7 @@ function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-user-id': USER_ID, 
         },
         body: JSON.stringify(newTask),
       });
@@ -55,6 +70,9 @@ function App() {
     try {
       await fetch(`${API_URL}/tasks/${id}`, {
         method: 'DELETE',
+        headers: {
+          'x-user-id': USER_ID, 
+        },
       });
       setTasks(tasks.filter(task => task.id !== id));
     } catch (err) {
@@ -68,6 +86,7 @@ function App() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'x-user-id': USER_ID, 
         },
         body: JSON.stringify({ status }),
       });
