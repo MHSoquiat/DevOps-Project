@@ -1,63 +1,10 @@
 # Setting Up ArgoCD
 
-This guide will help you implement GitOps using ArgoCD. We'll explain what GitOps is and why it's useful!
-
-## Understanding GitOps
-
-GitOps is a way to automatically update your application:
-
-```mermaid
-sequenceDiagram
-    participant D as Developer
-    participant G as Git Repo
-    participant A as ArgoCD
-    participant K as Kubernetes
-
-    D->>G: Push Changes
-    A->>G: Watch for Changes
-    A->>A: Compare with Cluster
-    A->>K: Apply Updates
-
-    Note over A,K: Automatic Sync!
-```
-
-Think of it like this:
-1. You update code in Git
-2. ArgoCD notices the change
-3. ArgoCD updates Kubernetes
-4. Everything stays in sync!
-
-## Why Use GitOps?
-
-```mermaid
-graph TD
-    A[Benefits of GitOps] --> B[Git is Source of Truth]
-    A --> C[Automatic Updates]
-    A --> D[Easy Rollbacks]
-    A --> E[Better Security]
-
-    B --> F[Everything in Code]
-    C --> F
-    D --> F
-    E --> F
-
-    style A fill:#ccffcc
-```
+This guide will help you implement GitOps using ArgoCD.
 
 ## Before We Start
 
-Let's check what we need:
-
-```mermaid
-graph LR
-    A[Prerequisites] --> B[Kubernetes Ready]
-    A --> C[kubectl Working]
-    A --> D[Git Repository]
-
-    B --> E[Ready to Start]
-    C --> E
-    D --> E
-```
+Prerequisites:
 
 1. Working Kubernetes Cluster
    - From previous guides

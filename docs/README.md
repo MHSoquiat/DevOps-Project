@@ -1,81 +1,13 @@
-# DevOps Implementation Guide
+# Project Execution Guide
 
-Welcome! This guide will walk you through implementing DevOps practices for a simple task management application. Don't worry if some concepts are new - we'll explain everything step by step.
+Welcome! This guide will walk you through the execution steps for our DevOps Project for a simple task management application.
 
-## The Big Picture
+## Execution Flow
 
-Before diving into the technical details, let's understand what we're building:
+We'll execute this DevOps project in small, manageable steps:
 
-```mermaid
-graph LR
-    A[Your Code] --> B[GitLab CI]
-    B --> C[Container Registry]
-    C --> D[ArgoCD]
-    D --> E[Kubernetes]
-    E --> F[Running App]
-```
-
-1. You'll write code and push to GitLab
-2. GitLab CI automatically builds container images
-3. ArgoCD watches for changes and updates Kubernetes
-4. Your app runs in Kubernetes
-
-This is called a "GitOps" workflow - everything starts with a git push!
-
-## Starting Point: The Sample App
-
-We'll use a simple task management application (provided in the `/app` directory) to learn DevOps practices. It has three parts:
-
-```mermaid
-graph TD
-    A[Frontend: React] --> B[Backend: Node.js]
-    B --> C[Database: PostgreSQL]
-```
-
-First, let's make sure you can run it locally:
-   ```bash
-   cd app
-   docker compose up
-   ```
-
-2. Test that it works:
-   - Frontend: http://localhost:3000 (React dev server)
-   - Backend API: http://localhost:3001
-   - Try the features:
-     * Create a task
-     * Update its status
-     * Delete the task
-
-## Your Learning Journey
-
-We'll implement DevOps practices in small, manageable steps:
-
-### Week 1: Building the Foundation
-```mermaid
-timeline
-    Local Setup : Run app locally
-                : Set up Kubernetes
-                : Learn basic commands
-    Helm : Package app
-         : Configure deployment
-         : Test locally
-```
-
-### Week 2: Automation & GitOps
-```mermaid
-timeline
-    GitLab CI : Set up repository
-              : Create pipeline
-              : Build containers
-    ArgoCD : Install ArgoCD
-           : Configure sync
-           : Deploy app
-```
-
-You'll learn to:
-
-1. **Local Kubernetes Setup**
-   - Choose a local Kubernetes solution
+1. **Azure Kubernetes Setup**
+   - Create Microsoft Azure Account
    - Set up your cluster
    - Learn basic Kubernetes concepts
 
@@ -93,6 +25,11 @@ You'll learn to:
    - Install ArgoCD
    - Configure applications
    - Implement GitOps workflow
+
+5. **Monitoring with Datadog**
+   - Enable Datadog Agent
+   - Trace Metrics
+   - Create Dashboards
 
 ## Step-by-Step Guides
 
@@ -121,27 +58,7 @@ You'll learn to:
    - Testing everything
    - Troubleshooting
 
-## Getting Help
-
-If you get stuck:
-1. Check the app's documentation
-2. Review error messages
-3. Ask during lab sessions
-
-## Timeline
-
-### Week 1: Foundation
-- Days 1-2: Local Kubernetes
-- Days 3-4: Helm Charts
-- Day 5: Review and fixes
-
-### Week 2: Implementation
-- Days 1-2: GitLab CI
-- Days 3-4: ArgoCD
-- Day 5: Final testing
-
-Remember:
-- Take it step by step
-- Test each part
-- Ask questions when needed
-- Keep it simple!
+6. [Datadog Guide](./06-datadog.md)
+   - Implementing observability
+   - Creating Dashboards
+   - Monitoring our Application
