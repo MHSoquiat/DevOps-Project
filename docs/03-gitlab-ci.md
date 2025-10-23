@@ -1,45 +1,8 @@
 # Setting Up GitLab CI/CD
 
-This guide will help you create an automated pipeline that builds and deploys your application. Don't worry if you're new to CI/CD - we'll explain everything!
+This guide will help you execute the automated pipeline that builds and deploys our application. 
 
-## Understanding CI/CD
-
-Let's break down what happens when you push code:
-
-```mermaid
-sequenceDiagram
-    participant D as Developer
-    participant G as GitLab
-    participant S as Shared Runner
-    participant R as Registry
-    participant K as Kubernetes
-
-    D->>G: Push Code
-    G->>S: Trigger Pipeline
-    S->>S: Build Container
-    S->>R: Push Image
-    S->>K: Deploy App
-
-    Note over S: GitLab.com provides<br/>shared runners for free!
-```
-
-CI/CD automates this whole process:
-- CI (Continuous Integration): Automatically builds your code into containers
-- CD (Continuous Delivery): Automatically deploys these containers
-- Everything starts with a git push!
-
-## What You'll Need
-
-```mermaid
-graph TD
-    A[Prerequisites] --> B[GitLab.com Account]
-    A --> C[Git on Your Computer]
-    A --> D[Docker Registry]
-
-    B --> E[Free Tier is Perfect!]
-    C --> F[For Code Pushes]
-    D --> G[GitLab Provides This]
-```
+## Prerequisites
 
 1. GitLab.com Account
    - Sign up at https://gitlab.com
@@ -50,65 +13,9 @@ graph TD
    - Check with: `git --version`
    - Install from: git-scm.com
 
-3. Docker Registry Access
+3. Container Registry Access
    - GitLab.com provides this free
    - We'll use it to store our containers
-
-## GitLab.com Free Features
-
-Everything you need is included:
-```mermaid
-graph LR
-    A[GitLab Free Tier] --> B[Unlimited Repos]
-    A --> C[400 CI/CD Minutes]
-    A --> D[Container Registry]
-    A --> E[Pipeline Tools]
-
-    style A fill:#ccffcc
-```
-
-No need to set up your own GitLab server!
-
-## Basic Pipeline
-
-### 1. Create .gitlab-ci.yml
-```yaml
-# Basic pipeline structure
-stages:
-  - build
-  - deploy
-
-variables:
-  DOCKER_REGISTRY: ${CI_REGISTRY}
-```
-
-### 2. Add Build Stage
-```yaml
-build-frontend:
-  stage: build
-  image: docker:20.10.16
-  services:
-    - docker:20.10.16-dind
-  script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA frontend/
-    - docker push $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_SHA
-  only:
-    changes:
-      - frontend/**/*
-```
-
-### 4. Add Deploy Stage
-```yaml
-deploy-dev:
-  stage: deploy
-  script:
-    - kubectl apply -f kubernetes/
-  environment:
-    name: development
-  only:
-    - develop
-```
 
 ## Setting Up GitLab
 
@@ -134,6 +41,12 @@ In GitLab > Settings > CI/CD > Variables:
 CI_REGISTRY_USER: Your registry username
 CI_REGISTRY_PASSWORD: Your registry password
 KUBE_CONFIG: Your base64 encoded kubeconfig
+```
+
+### 3. Enable GitLab Secrets
+In your command prompt, run the following command:
+```bash
+kubectl create secret docker-registry gitlab-registry-secret --docker-server=registry.gitlab.com --docker-username=<YOUR-GIT-USERNAME> --docker-password=<YOUR-GITLAB-PAT> --docker-email=<YOUR-GITLAB-EMAIL> -n task-app
 ```
 
 ## Testing the Pipeline
@@ -170,45 +83,6 @@ git push
 - Verify KUBE_CONFIG
 - Check manifest files
 - Test kubectl locally
-
-## Pipeline Examples
-
-### Basic Pipeline
-```yaml
-stages:
-  - build
-  - deploy
-
-build-app:
-  stage: build
-  script:
-    - docker build -t myapp .
-```
-
-### Multi-Stage Pipeline
-```yaml
-stages:
-  - build
-  - deploy
-
-include:
-  - template: Security/SAST.gitlab-ci.yml
-
-variables:
-  DOCKER_REGISTRY: ${CI_REGISTRY}
-  DOCKER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
-
-build:
-  stage: build
-  script:
-    - docker build -t $DOCKER_IMAGE .
-    - docker push $DOCKER_IMAGE
-
-deploy:
-  stage: deploy
-  script:
-    - kubectl apply -f k8s/
-```
 
 ## GitLab CI Features
 
@@ -252,20 +126,5 @@ Note: You don't need to worry about GitLab runners! GitLab.com provides shared r
 
 ## Next Steps
 
-1. Add more stages
-2. Implement testing
-3. Add security scanning
-4. Configure environments
-
-## Getting Help
-
-If you get stuck:
-1. Check job logs
-2. Review pipeline syntax
-3. Ask during lab sessions
-
-Remember:
-- Start with basic pipeline
-- Test locally first
-- Add features gradually
-- Keep it simple!
+1. Deploy using ArgoCD
+2. Implement Observability

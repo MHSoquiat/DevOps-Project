@@ -9,22 +9,6 @@ You'll be working with a simple task management application:
 - Backend: Node.js API
 - Database: PostgreSQL
 
-## Try It Out
-
-1. Start everything:
-```bash
-docker compose up
-```
-
-2. Open in your browser:
-   - Web App: http://localhost:3000 (React dev server)
-   - API: http://localhost:3001
-
-3. Test basic features:
-   - Create a task
-   - Update its status
-   - Delete a task
-
 ## Project Files
 
 ```
@@ -49,7 +33,7 @@ app/
 ### Environment Setup
 1. Frontend (.env):
 ```
-REACT_APP_API_URL=http://localhost:3001/api
+REACT_APP_API_URL=http://task.52.230.51.67.nip.io/api
 ```
 
 2. Backend (.env):
